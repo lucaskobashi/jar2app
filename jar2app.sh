@@ -38,7 +38,38 @@ echo "Creating directory structure..."
 BASE="$APPNAME.app/Contents"
 mkdir -p "$BASE/Java" "$BASE/MacOS" "$BASE/Resources"
 
-# Downloading and managing base file
+# # Input .icns file
+
+echo "Please input the absolute path for the .icns file (leave blank if none):"
+read ICNSPATH
+
+if [[ -n $ICNSPATH ]]
+then
+
+    # Testing .icns string
+    while [[ ! ${ICNSPATH: -5} == ".icns" ]]
+    do
+        echo "Error: invalid .icns file."
+        echo "Please input the absolute path for the .icns file:"
+        read ICNSPATH
+    done
+
+    # Testing if .icns is a valid file
+    while [[ ! -f $ICNSPATH ]]
+    do
+        echo "Error: .jar file does not exist."
+        echo "Please input the absolute path for the .jar file:"
+        read ICNSPATH
+    done
+
+    echo "Copying .icns file"
+    cp $ICNSPATH "$BASE/Resources/$APPNAME.icns"
+
+else
+    echo "No .icns file was determined by the user."
+fi
+
+Downloading and managing base file
 
 echo "Downloading universalJavaApplicationStub..."
 curl https://github.com/tofi86/universalJavaApplicationStub/archive/master.zip -sLo universalJavaApplicationStub.zip
