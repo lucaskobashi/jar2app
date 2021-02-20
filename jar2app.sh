@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Shell script to create a .app file from a .jar
+# FOR ADITIONAL FILES, MUST IMPORT MANUALLY TO .app/Contents/Java
 
 echo "Please input the name of the .app (without the extension):"
 read APPNAME
@@ -81,6 +82,10 @@ echo "Download completed..."
 
 echo "Parsing .jar file..."
 MAINCLASS=$(unzip -qc $JARPATH META-INF/MANIFEST.MF | grep "Main-Class: *" | sed "s/Main-Class: //" | tr -d '[:space:]')
+
+echo "Copying .jar file..."
+JARBASE=$(basename $JARPATH)
+cp $JARPATH "$BASE/Java/$JARBASE"
 
 echo "Writing Info.plist..."
 touch $BASE/Info.plist
