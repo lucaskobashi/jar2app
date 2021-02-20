@@ -32,11 +32,18 @@ do
     read JARPATH
 done
 
+# Creates directory structure
+
+echo "Creating directory structure..."
+BASE="$APPNAME.app/Contents"
+mkdir -p "$BASE/Java" "$BASE/MacOS" "$BASE/Resources"
+
 # Downloading and managing base file
 
 echo "Downloading universalJavaApplicationStub..."
 curl https://github.com/tofi86/universalJavaApplicationStub/archive/master.zip -sLo universalJavaApplicationStub.zip
 mkdir tempdirforjar2app
-unzip tempdirforjar2app/universalJavaApplicationStub.zip -d tempdirforjar2app
+unzip universalJavaApplicationStub.zip -d tempdirforjar2app
+
 
 echo "Completed..."
