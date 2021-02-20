@@ -2,7 +2,7 @@
 
 # Shell script to create a .app file from a .jar
 
-echo "Please input the name of the .app:"
+echo "Please input the name of the .app (without the extension):"
 read APPNAME
 
 # Testing the length of the .app string
@@ -69,12 +69,81 @@ else
     echo "No .icns file was determined by the user."
 fi
 
-Downloading and managing base file
+# Downloading and managing universalJavaApplicationStub file
 
 echo "Downloading universalJavaApplicationStub..."
 curl https://github.com/tofi86/universalJavaApplicationStub/archive/master.zip -sLo universalJavaApplicationStub.zip
 mkdir tempdirforjar2app
-unzip universalJavaApplicationStub.zip -d tempdirforjar2app
+unzip -q universalJavaApplicationStub.zip -d tempdirforjar2app
+mv tempdirforjar2app/universalJavaApplicationStub-master/src/universalJavaApplicationStub "$BASE/MacOS/universalJavaApplicationStub"
+rm -rf universalJavaApplicationStub.zip tempdirforjar2app
+echo "Download completed..."
 
+echo "Parsing .jar file..."
+MAINCLASS=$(unzip -qc $JARPATH META-INF/MANIFEST.MF | grep "Main-Class: *" | sed "s/Main-Class: //" | tr -d '[:space:]')
+
+echo "Writing Info.plist..."
+touch $BASE/Info.plist
+
+echo "
+<?xml version=1.0 encoding=UTF-8?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=1.0>
+    <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+
+    <key>CFBundleExecutable</key>
+    <string>universalJavaApplicationStub</string>
+
+    <key>CFBundleIconFile</key>
+    <string>$APPNAME</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>com.jar2app.example.$APPNAME</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>$APPNAME</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>8.0</string>
+
+    <key>CFBundleName</key>
+    <string>$APPNAME</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+
+    <key>NSHighResolutionCapable</key>
+    <string>True</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.1</string>
+
+    <key>CFBundleSignature</key>
+    <string>????</string>
+
+    <key>CFBundleVersion</key>
+    <string>1.0.1</string>
+
+    <key>JVMMainClassName</key>
+    <string>$MAINCLASS</string>
+
+    <key>JVMOptions</key>
+    <array>
+        <string>-Duser.dir=\$APP_ROOT/Contents</string>
+        <string>-Xdock:name=$APPNAME</string>
+    </array>
+
+    <key>JVMArguments</key>
+    <array>
+    </array>
+
+    </dict>
+</plist>
+" > $BASE/Info.plist
 
 echo "Completed..."
